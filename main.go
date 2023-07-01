@@ -17,13 +17,16 @@ func main() {
 
 	regexRules := getRules()
 
+	exitStatus := 0
 	for _, rule := range regexRules {
 		pattern := regexp.MustCompilePOSIX(rule.regexPattern)
 		match := pattern.Match([]byte(fileContents))
 		if match {
 			fmt.Println(fmt.Sprintf("%s: %s", rule.name, string(pattern.Find([]byte(fileContents)))))
+			exitStatus = 1
 		}
 	}
+	os.Exit(exitStatus)
 }
 
 func getRules() []rule {
@@ -33,6 +36,10 @@ func getRules() []rule {
 }
 
 func getLogFileContents() string {
+	if len(os.Args) < 2 {
+		fmt.Println("No file specified")
+		os.Exit(1)
+	}
 	arg := os.Args[1]
 	dat, err := os.ReadFile(arg)
 	check(err)
