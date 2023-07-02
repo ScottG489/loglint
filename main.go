@@ -19,7 +19,7 @@ func main() {
 
 	exitStatus := 0
 	for _, rule := range regexRules {
-		pattern := regexp.MustCompilePOSIX(rule.regexPattern)
+		pattern := regexp.MustCompile(rule.regexPattern)
 		match := pattern.Match([]byte(fileContents))
 		if match {
 			fmt.Println(fmt.Sprintf("%s: %s", rule.name, string(pattern.Find([]byte(fileContents)))))
@@ -31,7 +31,7 @@ func main() {
 
 func getRules() []rule {
 	return []rule{
-		{"Generic warning", "Warnings are bad.", ".*warning:.*"},
+		{"Generic warning", "Warnings are bad.", "(?i).*warning:.*"},
 	}
 }
 
