@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  workflow_run:
+    workflows: ["Example"]
+    types:
+      - completed
+jobs:
+  lint:
+    name: Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: scottg489/loglint-action@v0.1.0
+        id: loglint
+        with:
+          repo_token: ${{ github.token }}
+        continue-on-error: true
+      - run: '[[ "${{ steps.loglint.outcome }}" == "failure" ]]'

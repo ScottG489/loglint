@@ -1,0 +1,14 @@
+name: Example
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  example:
+    name: Example
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo Warning: This is an example job that writes a warning to the build logs and should cause a lint failure'
