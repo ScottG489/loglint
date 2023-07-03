@@ -7,7 +7,9 @@ import (
 )
 
 type rule struct {
+	code         string
 	name         string
+	labels     []string
 	shortReason  string
 	regexPattern string
 }
@@ -22,17 +24,11 @@ func main() {
 		pattern := regexp.MustCompile(rule.regexPattern)
 		match := pattern.Match([]byte(fileContents))
 		if match {
-			fmt.Println(fmt.Sprintf("%s: %s", rule.name, string(pattern.Find([]byte(fileContents)))))
+			fmt.Println(fmt.Sprintf("%s: '%s'", rule.name, string(pattern.Find([]byte(fileContents)))))
 			exitStatus = 1
 		}
 	}
 	os.Exit(exitStatus)
-}
-
-func getRules() []rule {
-	return []rule{
-		{"Generic warning", "Warnings are bad.", "(?i).*warning:.*"},
-	}
 }
 
 func getLogFileContents() string {
@@ -50,5 +46,38 @@ func getLogFileContents() string {
 func check(e error) {
 	if e != nil {
 		panic(e)
+	}
+}
+
+func getRules() []rule {
+	return []rule{
+		{
+			"LL100",
+			"Generic error",
+			[]string{"generic"},
+			"Errors are bad.",
+			"(?i).*error:.*",
+		},
+		{
+			"LL102",
+			"Generic warning",
+			[]string{"generic"},
+			"Warnings are bad.",
+			"(?i).*warning:.*",
+		},
+		{
+			"LL103",
+			"Terraform lock file changed",
+			[]string{"terraform"},
+			"Terraform lock file should be checked in.",
+			"^Terraform has made some changes to the provider dependency selections recorded",
+		},
+		{
+			"LL104",
+			"Terraform lock file created",
+			[]string{"terraform"},
+			"Terraform lock file should be checked in.",
+			"^Terraform has created a lock file \\S* to record the provider",
+		},
 	}
 }
