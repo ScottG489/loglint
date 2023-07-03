@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: scottg489/loglint-action@v0.1.0
+      - uses: scottg489/loglint-action@v0.1.1
         id: loglint
         with:
           repo_token: ${{ github.token }}
