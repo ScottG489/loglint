@@ -9,7 +9,7 @@ import (
 type rule struct {
 	code         string
 	name         string
-	labels     []string
+	labels       []string
 	shortReason  string
 	regexPattern string
 }
@@ -19,16 +19,23 @@ func main() {
 
 	regexRules := getRules()
 
+	exitStatus := validateRules(regexRules, fileContents)
+	os.Exit(exitStatus)
+}
+
+func validateRules(regexRules []rule, fileContents string) int {
 	exitStatus := 0
 	for _, rule := range regexRules {
 		pattern := regexp.MustCompile(rule.regexPattern)
 		match := pattern.Match([]byte(fileContents))
 		if match {
-			fmt.Println(fmt.Sprintf("%s: '%s'", rule.name, string(pattern.Find([]byte(fileContents)))))
+			for _, found := range pattern.FindAllString(fileContents, -1) {
+				fmt.Println(fmt.Sprintf("%s: '%s'", rule.name, found))
+			}
 			exitStatus = 1
 		}
 	}
-	os.Exit(exitStatus)
+	return exitStatus
 }
 
 func getLogFileContents() string {
