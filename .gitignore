@@ -1,3 +1,6 @@
+/loglint
+
+*.log
 
 dist/
 
