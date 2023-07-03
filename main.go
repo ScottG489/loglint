@@ -79,5 +79,12 @@ func getRules() []rule {
 			"Terraform lock file should be checked in.",
 			"^Terraform has created a lock file \\S* to record the provider",
 		},
+		{
+			"LL105",
+			"NPM warning",
+			[]string{"npm"},
+			"Generic NPM warning.",
+			"^npm WARN",
+		},
 	}
 }
