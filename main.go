@@ -96,7 +96,7 @@ func getRules() []rule {
 			"NPM warning",
 			[]string{"npm"},
 			"Generic NPM warning.",
-			"^npm WARN",
+			"^npm WARN.*",
 		},
 	}
 }
