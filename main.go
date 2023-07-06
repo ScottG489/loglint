@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/acarl005/stripansi"
+	"github.com/fatih/color"
 	"os"
 	"regexp"
+	"strconv"
 )
 
 type rule struct {
@@ -44,10 +46,10 @@ func validateRules(regexRules []rule, file *os.File) int {
 			pattern := regexp.MustCompile(rule.regexPattern)
 			match := pattern.FindString(text)
 			if match != "" {
-				fmt.Println(fmt.Sprintf("[%s] %s:%d: '%s'",
-					rule.code,
-					rule.name,
-					lineNumber,
+				fmt.Println(fmt.Sprintf("[%s] %s:%s: '%s'",
+					bold(rule.code),
+					red(rule.name),
+					bold(strconv.Itoa(lineNumber)),
 					match))
 				exitStatus = 1
 			}
@@ -101,3 +103,6 @@ func getRules() []rule {
 		},
 	}
 }
+
+var red = color.New(color.FgYellow).SprintFunc()
+var bold = color.New(color.Bold).SprintFunc()
