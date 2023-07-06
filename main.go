@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/acarl005/stripansi"
 	"os"
 	"regexp"
 )
@@ -38,7 +39,7 @@ func validateRules(regexRules []rule, file *os.File) int {
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		lineNumber++
-		text := scanner.Text()
+		text := stripansi.Strip(scanner.Text())
 		for _, rule := range regexRules {
 			pattern := regexp.MustCompile(rule.regexPattern)
 			match := pattern.FindString(text)
