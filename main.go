@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"regexp"
@@ -15,39 +16,43 @@ type rule struct {
 }
 
 func main() {
-	fileContents := getLogFileContents()
-
-	regexRules := getRules()
-
-	exitStatus := validateRules(regexRules, fileContents)
-	os.Exit(exitStatus)
-}
-
-func validateRules(regexRules []rule, fileContents string) int {
-	exitStatus := 0
-	for _, rule := range regexRules {
-		pattern := regexp.MustCompile(rule.regexPattern)
-		match := pattern.Match([]byte(fileContents))
-		if match {
-			for _, found := range pattern.FindAllString(fileContents, -1) {
-				fmt.Println(fmt.Sprintf("%s: '%s'", rule.name, found))
-			}
-			exitStatus = 1
-		}
-	}
-	return exitStatus
-}
-
-func getLogFileContents() string {
 	if len(os.Args) < 2 {
 		fmt.Println("No file specified")
 		os.Exit(1)
 	}
-	arg := os.Args[1]
-	dat, err := os.ReadFile(arg)
+	filename := os.Args[1]
+
+	file, err := os.Open(filename)
 	check(err)
-	fileContents := string(dat)
-	return fileContents
+
+	exitStatus := validateRules(getRules(), file)
+	err = file.Close()
+	check(err)
+	os.Exit(exitStatus)
+}
+
+func validateRules(regexRules []rule, file *os.File) int {
+	exitStatus := 0
+	lineNumber := 1
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		lineNumber++
+		text := scanner.Text()
+		for _, rule := range regexRules {
+			pattern := regexp.MustCompile(rule.regexPattern)
+			match := pattern.FindString(text)
+			if match != "" {
+				fmt.Println(fmt.Sprintf("[%s] %s:%d: '%s'",
+					rule.code,
+					rule.name,
+					lineNumber,
+					match))
+				exitStatus = 1
+			}
+		}
+	}
+	return exitStatus
 }
 
 func check(e error) {
